@@ -1,32 +1,6 @@
 'use strict';
 
-// Template
-/*
-let ex = {
-  author: {
-    avatar: 123,
-  },
-
-  offer: {
-    title: 123,
-    address: 123,
-    price: 123,
-    type: 123,
-    rooms: 123,
-    guests: 123,
-    checkin: 123,
-    checkout: 123,
-    features: 123,
-    description: 123,
-    photos: 123,
-  },
-
-  location: {
-    x: 123,
-    y: 123,
-  },
-};
-*/
+// -------------------- 1  -------------------- Создем mock массив
 
 let TOTAL_ADS = 8;
 let offerOptions = {
@@ -127,9 +101,11 @@ let getRandomShuffleFromArr = function (arr) {
   return copyArr;
 };
 
+// Создаем объект согласно ТЗ
 let createAdObj = function (i) {
   let adObj = {
     author: {
+      // На всякий случай, если объявлений больше 10
       avatar: 'img/avatars/user' + (i > 10 ? '' : '0') + (i + 1) + '.png',
     },
     offer: {
@@ -178,12 +154,158 @@ let createAdObj = function (i) {
         ) - PIN_SIZE.HEIGHT,
     },
   };
-  adObj.offer.adress = adObj.location.x + ', ' + adObj.location.y;
+  adObj.offer.address = adObj.location.x + ', ' + adObj.location.y;
 
   return adObj;
 };
 
-// Создали 8 объектов по тз в массив adsArr
+// Создали 8 объектов по ТЗ в массив adsArr
 for (let k = 0; k < TOTAL_ADS; k++) {
   adsArr[k] = createAdObj(k);
 }
+
+// -------------------- 3  -------------------- Рисуем пины
+
+// У блока .map уберите класс .map--faded.
+let showMap = document.querySelector('.map');
+showMap.classList.remove('map--faded');
+
+// 1. нужно определить блок template
+// Определяем тег "tempalte", где содержиться заготовка
+let template = document.querySelector('template');
+
+// 2. определить куда вставлять pins -- map__pin
+let mapPinTemplate = template.content.querySelector('.map__pin');
+
+// 3. Сделать функцию создания пина
+let createPinMarkup = (pinData) => {
+  // Клонируем элемент
+  let pinItem = mapPinTemplate.cloneNode(true);
+  // Задаем src для img внутри
+  pinItem.querySelector('img').src = pinData.author.avatar;
+  // Задаем локации
+  pinItem.style.left = pinData.location.x + 'px';
+  pinItem.style.top = pinData.location.y + 'px';
+  // Задаем заголовок
+  pinItem.querySelector('img').alt = pinData.offer.title;
+
+  // Функция возвращяет созданный пин
+  return pinItem;
+};
+
+// DOM-элемент объявления и вставьте полученный DOM-элемент в блок .map
+let map = document.querySelector('.map');
+// Определяем куда render пины
+let mapPins = map.querySelector('.map__pins');
+
+// 4. Сделать TOTAL_ADS.lenght количество пинов
+let renderPinsMarkup = (arrHowMuchPins) => {
+  // Создаем фрагмент
+  let mapPinsFragment = document.createDocumentFragment();
+  // Сколько нужно как говориться
+  for (let i = 0; i < arrHowMuchPins.length; i++) {
+    // Создаем фрагмент => вставляем в конец  => во фрагменте будет пин[i]
+    mapPinsFragment.appendChild(createPinMarkup(arrHowMuchPins[i]));
+  }
+  // Возвращяем (arrHowMuchPins.length) фрагментов в конец секц .map__pins
+  return mapPins.appendChild(mapPinsFragment);
+};
+
+// 5. Рисуем все пины
+renderPinsMarkup(adsArr);
+
+// -------------------- 3  -------------------- Попап описание к пинам
+
+// Опредеяем template объявления
+let adTemplate = template.content.querySelector('.map__card');
+
+// Список для замены
+let typesMap = {
+  palace: 'Дворец',
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало',
+};
+
+// Создаем список в .popup__features
+let createFeatureFragment = (adData) => {
+  // Создаем фрагмент
+  let featureFragment = document.createDocumentFragment();
+  // сколько раз
+  for (let i = 0; i < adData.offer.features.length; i++) {
+    // Создаем элемент списка (li)
+    let featureItem = document.createElement('li');
+    // Задаем элементу списка класс
+    featureItem.className =
+      'popup__feature popup__feature--' + adData.offer.features[i];
+    // Куда вставялем
+    featureFragment.appendChild(featureItem);
+  }
+  return featureFragment;
+};
+
+let popupPhoto = template.content.querySelector('.popup__photo');
+
+let createPhotosFragment = (adData) => {
+  // Создем фрагмент
+  let photosFragment = document.createDocumentFragment();
+  // Сколько раз
+  for (let i = 0; i < adData.offer.photos.length; i++) {
+    // Копируем
+    let popupPhotoItem = popupPhoto.cloneNode(true);
+    // Что копируем
+    popupPhotoItem.src = adData.offer.photos[i];
+    // Куда вставляем
+    photosFragment.appendChild(popupPhotoItem);
+  }
+  return photosFragment;
+};
+
+// 3. Сделать функцию создания объекта объявления -- попапа
+let createAd = (adData) => {
+  // Копируем объявление
+  let ad = adTemplate.cloneNode(true);
+  // Меняем аватар у объявления
+  ad.querySelector('.map__card img').src = adData.author.avatar;
+  // Выведите заголовок объявления offer.title в заголовок .popup__title
+  ad.querySelector('.popup__title').textContent = adData.offer.title;
+  // Выведите адрес offer.address в блок .popup__text--address
+  ad.querySelector('.popup__text--address').textContent = adData.offer.address;
+  // Выведите цену offer.price в блок .popup__text--price строкой
+  ad.querySelector('.popup__text--price').textContent =
+    adData.offer.price + ' ₽/ночь';
+  // В блок .popup__type выведите тип
+  ad.querySelector('.popup__type').textContent = typesMap[adData.offer.type];
+  // Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity строкой
+  ad.querySelector('.popup__text--capacity').textContent =
+    adData.offer.rooms + ' комнаты для ' + adData.offer.guests + ' гостей';
+  // Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time
+  ad.querySelector('.popup__text--time').textContent =
+    'Заезд после ' +
+    adData.offer.checkin +
+    ', выезд до ' +
+    adData.offer.checkout;
+  // Очищаем список .popup__features
+  ad.querySelector('.popup__features').innerHTML = '';
+  // В список .popup__features выведите все доступные удобства в объявлении
+  ad.querySelector('.popup__features').appendChild(
+    createFeatureFragment(adData)
+  );
+  // В блок .popup__description выведите описание объекта недвижимости offer.description.
+  ad.querySelector('.popup__description').textContent =
+    adData.offer.description;
+  // Удаляем что было до этого
+  ad.querySelector('.popup__photos').removeChild(
+    ad.querySelector('.popup__photo')
+  );
+  // В блок .popup__photos выведите все фотографии из списка offer.photos
+  ad.querySelector('.popup__photos').appendChild(createPhotosFragment(adData));
+
+  // Возвращяем собранное
+  return ad;
+};
+
+// Вставляем adTemplate перед блоком .map__filters-container:
+let mapFiltersContainer = map.querySelector('.map__filters-container');
+
+mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(adsArr[0]));
