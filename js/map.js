@@ -167,8 +167,8 @@ for (let k = 0; k < TOTAL_ADS; k++) {
 // -------------------- 3  -------------------- Рисуем пины
 
 // // У блока .map уберите класс .map--faded.
-let showMap = document.querySelector('.map');
-showMap.classList.remove('map--faded');
+// let showMap = document.querySelector('.map');
+// showMap.classList.remove('map--faded');
 
 // 1. нужно определить блок template
 // Определяем тег "tempalte", где содержиться заготовка
