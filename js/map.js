@@ -166,7 +166,7 @@ for (let k = 0; k < TOTAL_ADS; k++) {
 
 // -------------------- 3  -------------------- Рисуем пины
 
-// У блока .map уберите класс .map--faded.
+// // У блока .map уберите класс .map--faded.
 let showMap = document.querySelector('.map');
 showMap.classList.remove('map--faded');
 
@@ -212,7 +212,7 @@ let renderPinsMarkup = (arrHowMuchPins) => {
 };
 
 // 5. Рисуем все пины
-renderPinsMarkup(adsArr);
+// renderPinsMarkup(adsArr);
 
 // -------------------- 3  -------------------- Попап описание к пинам
 
@@ -306,6 +306,5 @@ let createAd = (adData) => {
 };
 
 // Вставляем adTemplate перед блоком .map__filters-container:
-let mapFiltersContainer = map.querySelector('.map__filters-container');
-
-mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(adsArr[0]));
+// let mapFiltersContainer = map.querySelector('.map__filters-container');
+// mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(adsArr[0]));
