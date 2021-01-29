@@ -2,7 +2,9 @@
 
 // -------------------- 1  -------------------- Создем mock массив
 
+// Сколько всего объявлений
 let TOTAL_ADS = 8;
+// Mock объекта
 let offerOptions = {
   // строка, заголовок предложения, одно из фиксированных значений. Значения не должны повторяться.
   TITLES: [
@@ -64,14 +66,46 @@ let offerOptions = {
     },
   },
 };
-
+// Задаем размер пина
 let PIN_SIZE = {
   WIDTH: 50,
   HEIGHT: 70,
 };
-
+// Список для замены
+let typesMap = {
+  palace: 'Дворец',
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало',
+};
 // Создать массив из объектов
 let adsArr = [];
+// Определяем тег "tempalte", где содержиться заготовка
+let template = document.querySelector('template');
+// 2. определить куда вставлять pins -- map__pin
+let mapPinTemplate = template.content.querySelector('.map__pin');
+// DOM-элемент объявления и вставьте полученный DOM-элемент в блок .map
+let map = document.querySelector('.map');
+// Определяем куда render пины
+let mapPins = map.querySelector('.map__pins');
+// Куда вставлять фотографии объявлений
+let popupPhoto = template.content.querySelector('.popup__photo');
+// Опредеяем template объявления
+let adTemplate = template.content.querySelector('.map__card');
+// Определяем главный пин
+let mapPinMain = document.querySelector('.map__pin--main');
+// Карта
+let mapFilters = map.querySelector('.map__filters');
+// Поля для заполнения на карте
+let mapFiltersFieldset = mapFilters.querySelectorAll('fieldset');
+// Поля для выбора на карте
+let mapFiltersSelect = mapFilters.querySelectorAll('select');
+// Поле формы "Ваше объявление"
+let adForm = document.querySelector('.ad-form');
+// Поля для заполнения в форме "Ваше объявление"
+let adFormFieldset = adForm.querySelectorAll('fieldset');
+// Поля формы "Ваше объявление"
+let inputAddress = adForm.querySelector('#address');
 
 // одно из фиксированных значений
 let getRandomFromInterval = function (min, max) {
@@ -159,7 +193,7 @@ let createAdObj = function (i) {
   return adObj;
 };
 
-// Создали 8 объектов по ТЗ в массив adsArr
+// создаем TOTAL_ADS кол-во объектов по ТЗ в массив adsArr
 for (let k = 0; k < TOTAL_ADS; k++) {
   adsArr[k] = createAdObj(k);
 }
@@ -169,13 +203,6 @@ for (let k = 0; k < TOTAL_ADS; k++) {
 // // У блока .map уберите класс .map--faded.
 // let map = document.querySelector('.map');
 // map.classList.remove('map--faded');
-
-// 1. нужно определить блок template
-// Определяем тег "tempalte", где содержиться заготовка
-let template = document.querySelector('template');
-
-// 2. определить куда вставлять pins -- map__pin
-let mapPinTemplate = template.content.querySelector('.map__pin');
 
 // 3. Сделать функцию создания пина
 let createPinMarkup = (pinData) => {
@@ -192,11 +219,6 @@ let createPinMarkup = (pinData) => {
   // Функция возвращяет созданный пин
   return pinItem;
 };
-
-// DOM-элемент объявления и вставьте полученный DOM-элемент в блок .map
-let map = document.querySelector('.map');
-// Определяем куда render пины
-let mapPins = map.querySelector('.map__pins');
 
 // 4. Сделать TOTAL_ADS.lenght количество пинов
 let renderPinsMarkup = (arrHowMuchPins) => {
@@ -216,18 +238,7 @@ let renderPinsMarkup = (arrHowMuchPins) => {
 
 // -------------------- 3  -------------------- Попап описание к пинам
 
-// Опредеяем template объявления
-let adTemplate = template.content.querySelector('.map__card');
-
-// Список для замены
-let typesMap = {
-  palace: 'Дворец',
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalo: 'Бунгало',
-};
-
-// Создаем список в .popup__features
+// Создаем список features в .popup__features
 let createFeatureFragment = (adData) => {
   // Создаем фрагмент
   let featureFragment = document.createDocumentFragment();
@@ -244,8 +255,7 @@ let createFeatureFragment = (adData) => {
   return featureFragment;
 };
 
-let popupPhoto = template.content.querySelector('.popup__photo');
-
+// Создаем фотографии в popupPhoto
 let createPhotosFragment = (adData) => {
   // Создем фрагмент
   let photosFragment = document.createDocumentFragment();
@@ -309,11 +319,30 @@ let createAd = (adData) => {
 // let mapFiltersContainer = map.querySelector('.map__filters-container');
 // mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(adsArr[0]));
 
+// -------------------- 4  -------------------- Делаем карту активной
+
 // Первое действие, которое нужно выполнить, перед тем, как приступить к этому заданию, вернуть страницу в исходное состояние. В прошлом разделе мы активировали карту, убрав у неё класс .map--faded и вызвали методы отрисовки похожих объявлений и метод отрисовки карточки. Проблема в том, что это не соответствует ТЗ — эти методы должны вызываться только в рамках соответствующих сценариев, поэтому мы уберём их вызовы, а самими методами воспользуемся позже. Пока что оставим в коде методы, созданные в прошлом задании, но саму страницу вернём в исходное состояние.
 
 // Функция показа карты
 let showMap = () => {
   map.classList.remove('map--faded');
+};
+
+let getMapPinMainCoords = () => {
+  let mapPinMainPosition = {
+    x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
+    y: mapPinMain.offsetTop + mapPinMain.offsetHeight,
+  };
+  return mapPinMainPosition;
+};
+
+// Функция вывода локации метки в поле адресс
+let fillAdressInput = () => {
+  // Узнаем координаты главной метки
+  let mapPinMainPosition = getMapPinMainCoords();
+  inputAddress.value = mapPinMainPosition.x + ', ' + mapPinMainPosition.y;
+
+  console.log(mapPinMainPosition);
 };
 
 // 5. Рисуем все пины
@@ -327,13 +356,7 @@ let showMap = () => {
 
 // Создаем фукнцию которая может выключать и включать элементы формы к заполнению
 let makeFromActive = (boolean /* disabled (true или false) */) => {
-  let adForm = document.querySelector('.ad-form');
-  let adFormFieldset = adForm.querySelectorAll('fieldset');
-  let mapFilters = map.querySelector('.map__filters');
-  let mapFiltersFieldset = mapFilters.querySelectorAll('fieldset');
-  let mapFiltersSelect = mapFilters.querySelectorAll('select');
-
-  // Если активно то форма добавления объявления разблокируется
+  // Если активно то форма добавления объявления opacity: 0
   if (boolean === true) {
     adForm.classList.remove('ad-form--disabled');
   } else {
@@ -342,51 +365,51 @@ let makeFromActive = (boolean /* disabled (true или false) */) => {
 
   // Делаем цикл который проходит по всем элменетам adFormFieldset внутри adForm
   for (let i = 0; i < adFormFieldset.length; i++) {
-    // Выключаем все формы, добавляя disabled
+    // Выключаем или включаем все поля, добавляя disabled
     adFormFieldset[i].disabled = !boolean;
   }
 
   // Делаем цикл который проходит по всем элменетам mapFiltersSelect внутри mapFilters
   for (let i = 0; i < mapFiltersSelect.length; i++) {
-    // Выключаем все формы, добавляя disabled
+    // Выключаем или включаем все выборы, добавляя disabled
     mapFiltersSelect[i].disabled = !boolean;
   }
 
   // Делаем цикл который проходит по всем элменетам mapFiltersFieldset внутри mapFilters
   for (let i = 0; i < mapFiltersFieldset.length; i++) {
-    // Выключаем все формы, добавляя disabled
+    // Выключаем или включаем все поля, добавляя disabled
     mapFiltersFieldset[i].disabled = !boolean;
 
-    // Добавляем класс с opacity 0.3 с условием boolean
-    if (boolean === false) {
-      mapFiltersFieldset[i].classList.add('ad-form--disabled');
-    } else {
+    // Добавляем или убираем класс с opacity 0.3
+    if (boolean === true) {
       mapFiltersFieldset[i].classList.remove('ad-form--disabled');
+    } else {
+      mapFiltersFieldset[i].classList.add('ad-form--disabled');
     }
   }
 
-  // Добавляем адрес текущей метки в поле "АДРЕС"
-  // Куда вставляем адрес
+  // При активации добавляем адрес текущей метки в поле "АДРЕС"
+  boolean ? fillAdressInput() : (inputAddress.value = '');
 };
 
+// По умолчанию делаем форму не активной
 makeFromActive(false);
 
-// -------------- 4.1 --------------
-
-// Определяем главный пин
-let mapPinMain = document.querySelector('.map__pin--main');
+// -------------- 4.1 -------------- Обработчик mouseup на главный пин
 
 // Обработчик активации полей и элементов и карты
 let siteStatusHandler = () => {
-  // Активаруем поля форм
-  makeFromActive(true);
-
-  // Показываем карту
-  showMap();
-
-  // Рисуем пины
-  renderPinsMarkup(adsArr);
+  debugger;
+  // Если форма не активна, то активируем
+  if (makeFromActive(false)) {
+    // Активируем поля форм
+    makeFromActive(true);
+    // Показываем карту
+    showMap();
+    // Рисуем пины
+    renderPinsMarkup(adsArr);
+  }
 };
 
-// Вешаем обработчки на глаынй пин
+// Вешаем обработчик на главный пин
 mapPinMain.addEventListener('mouseup', siteStatusHandler);
