@@ -106,6 +106,8 @@ let adForm = document.querySelector('.ad-form');
 let adFormFieldset = adForm.querySelectorAll('fieldset');
 // Поля формы "Ваше объявление"
 let inputAddress = adForm.querySelector('#address');
+// Проверка активна ли форма (по умолчанию false)
+let isActive;
 
 // одно из фиксированных значений
 let getRandomFromInterval = function (min, max) {
@@ -328,6 +330,10 @@ let showMap = () => {
   map.classList.remove('map--faded');
 };
 
+let blockMap = () => {
+  map.classList.add('map--faded');
+};
+
 let getMapPinMainCoords = () => {
   let mapPinMainPosition = {
     x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
@@ -341,8 +347,6 @@ let fillAdressInput = () => {
   // Узнаем координаты главной метки
   let mapPinMainPosition = getMapPinMainCoords();
   inputAddress.value = mapPinMainPosition.x + ', ' + mapPinMainPosition.y;
-
-  console.log(mapPinMainPosition);
 };
 
 // 5. Рисуем все пины
@@ -356,7 +360,7 @@ let fillAdressInput = () => {
 
 // Создаем фукнцию которая может выключать и включать элементы формы к заполнению
 let makeFromActive = (boolean /* disabled (true или false) */) => {
-  // Если активно то форма добавления объявления opacity: 0
+  // Если активно то форма добавления объявления => opacity: 0
   if (boolean === true) {
     adForm.classList.remove('ad-form--disabled');
   } else {
@@ -390,6 +394,9 @@ let makeFromActive = (boolean /* disabled (true или false) */) => {
 
   // При активации добавляем адрес текущей метки в поле "АДРЕС"
   boolean ? fillAdressInput() : (inputAddress.value = '');
+
+  // Перезаписываем значение переменной isActive
+  isActive = boolean;
 };
 
 // По умолчанию делаем форму не активной
@@ -399,10 +406,9 @@ makeFromActive(false);
 
 // Обработчик активации полей и элементов и карты
 let siteStatusHandler = () => {
-  debugger;
   // Если форма не активна, то активируем
-  if (makeFromActive(false)) {
-    // Активируем поля форм
+  if (isActive === false) {
+    // Активируем формы
     makeFromActive(true);
     // Показываем карту
     showMap();
