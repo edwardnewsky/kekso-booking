@@ -105,7 +105,11 @@ let adForm = document.querySelector('.ad-form');
 // Поля для заполнения в форме "Ваше объявление"
 let adFormFieldset = adForm.querySelectorAll('fieldset');
 // Поля формы "Ваше объявление"
-let inputAddress = adForm.querySelector('#address');
+let adFormInputAddress = adForm.querySelector('#address');
+// Кнопка отправить на форме Объявление
+let adFormSubmit = adForm.querySelector('.ad-form__submit');
+// Определеляем модальное окно успеха
+let successModal = document.querySelector('.success');
 // Проверка активна ли форма (по умолчанию false)
 let isActive;
 
@@ -346,7 +350,7 @@ let getMapPinMainCoords = () => {
 let fillAdressInput = () => {
   // Узнаем координаты главной метки
   let mapPinMainPosition = getMapPinMainCoords();
-  inputAddress.value = mapPinMainPosition.x + ', ' + mapPinMainPosition.y;
+  adFormInputAddress.value = mapPinMainPosition.x + ', ' + mapPinMainPosition.y;
 };
 
 // 5. Рисуем все пины
@@ -393,7 +397,7 @@ let makeFromActive = (boolean /* disabled (true или false) */) => {
   }
 
   // При активации добавляем адрес текущей метки в поле "АДРЕС"
-  boolean ? fillAdressInput() : (inputAddress.value = '');
+  boolean ? fillAdressInput() : (adFormInputAddress.value = '');
 
   // Перезаписываем значение переменной isActive
   isActive = boolean;
@@ -419,3 +423,30 @@ let siteStatusHandler = () => {
 
 // Вешаем обработчик на главный пин
 mapPinMain.addEventListener('mouseup', siteStatusHandler);
+
+// -------------- 4.2 -------------- Оработчик показа "Объявление успешно"
+
+// Обработчик скрытия модального окна "успех"
+let hideSuccessHandler = (evt) => {
+  // Отменяем действие по умолчанию
+  evt.preventDefault();
+  // Скрываем окно, добавляем класс hidden
+  successModal.classList.add('hidden');
+  // Удаляем обработчик закрытия окна
+  successModal.removeEventListener('click', hideSuccessHandler);
+};
+
+// Обработчик показа модального окна "успех"
+let showSuccessHandler = (evt) => {
+  // Отменяем действие по умолчанию (переход на другую страницу, отправка...)
+  evt.preventDefault();
+  // Показываем окно, удаляя класс hidden
+  successModal.classList.remove('hidden');
+  // Отключаем форму
+  makeFromActive(false);
+  // Добавляем обработчик закрытия мобального окна по клику
+  successModal.addEventListener('click', hideSuccessHandler);
+};
+
+// Вешаем обработчик открытия и закрытия модального окна "успех"
+adFormSubmit.addEventListener('click', showSuccessHandler);
