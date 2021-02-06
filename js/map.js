@@ -78,6 +78,16 @@ let typesMap = {
   house: 'Дом',
   bungalo: 'Бунгало',
 };
+var DragLimit = {
+  X: {
+    MIN: 0,
+    MAX: 1200,
+  },
+  Y: {
+    MIN: 130,
+    MAX: 630,
+  },
+};
 // Создать массив из объектов
 let adsArr = [];
 // Определяем тег "tempalte", где содержиться заготовка
@@ -426,16 +436,6 @@ mapPinMain.addEventListener('mouseup', siteStatusHandler);
 
 // -------------- 4.2 -------------- Оработчик показа "Объявление успешно"
 
-// Обработчик скрытия модального окна "успех"
-let hideSuccessHandler = (evt) => {
-  // Отменяем действие по умолчанию
-  evt.preventDefault();
-  // Скрываем окно, добавляем класс hidden
-  successModal.classList.add('hidden');
-  // Удаляем обработчик закрытия окна
-  successModal.removeEventListener('click', hideSuccessHandler);
-};
-
 // Обработчик показа модального окна "успех"
 let showSuccessHandler = (evt) => {
   // Отменяем действие по умолчанию (переход на другую страницу, отправка...)
@@ -446,7 +446,39 @@ let showSuccessHandler = (evt) => {
   makeFromActive(false);
   // Добавляем обработчик закрытия мобального окна по клику
   successModal.addEventListener('click', hideSuccessHandler);
+  successModal.addEventListener('keypress', hideSuccessHandler);
+};
+
+// Обработчик скрытия модального окна "успех"
+let hideSuccessHandler = (evt) => {
+  // Отменяем действие по умолчанию
+  evt.preventDefault();
+  // Закрываем по кнопке ESC
+  if (evt.keyCode === 27 || ) {
+    successModal.classList.add('hidden');
+  }
+  // Скрываем окно, добавляем класс hidden
+  successModal.classList.add('hidden');
+  // Удаляем обработчик закрытия окна
+  successModal.removeEventListener('click', hideSuccessHandler);
+  successModal.removeEventListener('keypress', hideSuccessHandler);
 };
 
 // Вешаем обработчик открытия и закрытия модального окна "успех"
-adFormSubmit.addEventListener('click', showSuccessHandler);
+adForm.addEventListener('submit', showSuccessHandler);
+
+// -------------- 4.3 -------------- Оработчик показа передвижения Главного пина
+
+// Оработчик показа передвижения Главного пина
+let moveMainPinHandler = (evt) => {
+  // Сбрасываем действие по умлочанию
+  evt.preventDefault();
+  // Говорим о начальной точке
+  let startCoords = {
+    x: evt.clientX,
+    y: evt.clientY,
+  }
+}
+
+// Вешаем обработчик нажатия клика
+mapPinMain.addEventListener('mousedown', moveMainPinHandler)
