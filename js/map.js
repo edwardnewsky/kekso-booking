@@ -504,7 +504,7 @@ mapPinMain.addEventListener('mousedown', (evt) => {
     // Задаем возможность перемещения в формат рамки (границ)
     let LIMIT = {
       TOP: DRAG_LIMIT.Y.MIN - mapPinMain.offsetHeight,
-      BOTTOM: DRAG_LIMIT.Y.MAX - mapPinMain.offsetHeight,
+      BOTTOM: DRAG_LIMIT.Y.MAX,
       LEFT: DRAG_LIMIT.X.MIN,
       RIGHT: DRAG_LIMIT.X.MAX - mapPinMain.offsetWidth,
     };
@@ -523,25 +523,27 @@ mapPinMain.addEventListener('mousedown', (evt) => {
       mapPinMain.style.top = mapPinMainPosition.y + 'px';
     }
 
+    fillAdressInput();
+
     console.log(
       `ДВИЖЕНИЕ -- Перемещается на ${mapPinMain.style.top} и ${mapPinMain.style.left}`
     );
-
-    fillAdressInput();
   };
 
   let onMouseUpMainPin = (upEvt) => {
     upEvt.preventDefault();
 
-    mapPinMain.removeEventListener('mousemove', onMouseMoveMainPin);
-    mapPinMain.removeEventListener('mouseup', onMouseUpMainPin);
+    // Исправил баг -- Вот здесь нужно было вешать не на кнопку а на документ
+    document.removeEventListener('mousemove', onMouseMoveMainPin);
+    document.removeEventListener('mouseup', onMouseUpMainPin);
+
     console.log(
-      `ОТПУТИЛИ -- Обработчики удалены -- Кордината в которой стоит пин: x = ${startCoords.x}px, y = ${startCoords.y}px`
+      `ОТПУСТИЛИ -- Обработчики удалены -- Кордината в которой стоит пин: x = ${startCoords.x}px, y = ${startCoords.y}px`
     );
   };
 
   // При нажатии мышки Добавляем обработчк перемещения мышки
-  mapPinMain.addEventListener('mousemove', onMouseMoveMainPin);
+  document.addEventListener('mousemove', onMouseMoveMainPin);
   // При отпускании мышки Удаляем обработчки перемещения и this
-  mapPinMain.addEventListener('mouseup', onMouseUpMainPin);
+  document.addEventListener('mouseup', onMouseUpMainPin);
 });
