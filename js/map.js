@@ -416,7 +416,7 @@ let makeFromActive = (boolean /* disabled (true или false) */) => {
 // По умолчанию делаем форму не активной
 makeFromActive(false);
 
-// -------------- 4.1 -------------- Обработчик mouseup на главный пин
+// -------------- 4.1 -------------- Обработчики на главный пин
 
 // Обработчик активации полей и элементов и карты
 let siteStatusHandler = () => {
@@ -466,3 +466,82 @@ let hideSuccessHandler = (evt) => {
 
 // Вешаем обработчик открытия и закрытия модального окна "успех"
 adForm.addEventListener('submit', showSuccessHandler);
+
+// -------------- 4.3 -------------- Оработчик передвижения Главного пина
+
+mapPinMain.addEventListener('mousedown', (evt) => {
+  // Отмена по умолчанию
+  evt.preventDefault();
+  // Запомнили начальные координаты
+  let startCoords = {
+    x: evt.clientX,
+    y: evt.clientY,
+  };
+  console.log(
+    `НАЖАТИЕ -- Кордината в которой стоит пин: x = ${startCoords.x}px, y = ${startCoords.y}px`
+  );
+
+  let onMouseMoveMainPin = (moveEvt) => {
+    moveEvt.preventDefault();
+    // Определяем насколько изменилось положение относительно начальной точки
+    let shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY,
+    };
+
+    // ЧТО ЭТО
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY,
+    };
+
+    // Определяем насколько должно измениться положения главного пина
+    let mapPinMainPosition = {
+      x: mapPinMain.offsetLeft - shift.x,
+      y: mapPinMain.offsetTop - shift.y,
+    };
+
+    // Задаем возможность перемещения в формат рамки (границ)
+    let LIMIT = {
+      TOP: DRAG_LIMIT.Y.MIN - mapPinMain.offsetHeight,
+      BOTTOM: DRAG_LIMIT.Y.MAX - mapPinMain.offsetHeight,
+      LEFT: DRAG_LIMIT.X.MIN,
+      RIGHT: DRAG_LIMIT.X.MAX - mapPinMain.offsetWidth,
+    };
+    // Условие если позиция Главного пина по горизонтали меньше Левого и Правого ЛИМИТА, изменить положение (стиль) главного пина, относительно левого края
+    if (
+      mapPinMainPosition.x >= LIMIT.LEFT &&
+      mapPinMainPosition.x <= LIMIT.RIGHT
+    ) {
+      mapPinMain.style.left = mapPinMainPosition.x + 'px';
+    }
+    // Условие если позиция Главного пина по вертикали меньше Верхнего и Нижнего ЛИМИТА, изменить положение (стиль) главного пина, относительно верха
+    if (
+      mapPinMainPosition.y >= LIMIT.TOP &&
+      mapPinMainPosition.y <= LIMIT.BOTTOM
+    ) {
+      mapPinMain.style.top = mapPinMainPosition.y + 'px';
+    }
+
+    console.log(
+      `ДВИЖЕНИЕ -- Перемещается на ${mapPinMain.style.top} и ${mapPinMain.style.left}`
+    );
+
+    fillAdressInput();
+  };
+
+  let onMouseUpMainPin = (upEvt) => {
+    upEvt.preventDefault();
+
+    mapPinMain.removeEventListener('mousemove', onMouseMoveMainPin);
+    mapPinMain.removeEventListener('mouseup', onMouseUpMainPin);
+    console.log(
+      `ОТПУТИЛИ -- Обработчики удалены -- Кордината в которой стоит пин: x = ${startCoords.x}px, y = ${startCoords.y}px`
+    );
+  };
+
+  // При нажатии мышки Добавляем обработчк перемещения мышки
+  mapPinMain.addEventListener('mousemove', onMouseMoveMainPin);
+  // При отпускании мышки Удаляем обработчки перемещения и this
+  mapPinMain.addEventListener('mouseup', onMouseUpMainPin);
+});
