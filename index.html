@@ -234,12 +234,15 @@
               name="title"
               type="text"
               placeholder="Милая, уютная квартирка в центре Токио"
+              required
+              minlength="2"
+              maxlength="40"
             />
           </fieldset>
 
           <fieldset class="ad-form__element ad-form__element--wide">
             <label class="ad-form__label" for="address">Адрес</label>
-            <input id="address" name="address" type="text" />
+            <input id="address" name="address" type="text" required />
           </fieldset>
 
           <fieldset class="ad-form__element">
@@ -254,7 +257,13 @@
 
           <fieldset class="ad-form__element">
             <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-            <input id="price" name="price" type="number" placeholder="5000" />
+            <input
+              id="price"
+              name="price"
+              type="number"
+              placeholder="5000"
+              required
+            />
           </fieldset>
 
           <fieldset class="ad-form__element ad-form__element--time">
@@ -525,6 +534,5 @@
     </template>
 
     <script src="/js/map.js"></script>
-    <script src="/js/test.js"></script>
   </body>
 </html>

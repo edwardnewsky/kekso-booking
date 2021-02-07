@@ -434,40 +434,7 @@ let siteStatusHandler = () => {
 // Вешаем обработчик на главный пин
 mapPinMain.addEventListener('mouseup', siteStatusHandler);
 
-// -------------- 4.2 -------------- Оработчик показа "Объявление успешно"
-
-// Обработчик показа модального окна "успех"
-let showSuccessHandler = (evt) => {
-  // Отменяем действие по умолчанию (переход на другую страницу, отправка...)
-  evt.preventDefault();
-  // Показываем окно, удаляя класс hidden
-  successModal.classList.remove('hidden');
-  // Отключаем форму
-  makeFromActive(false);
-  // Добавляем обработчик закрытия мобального окна по клику
-  successModal.addEventListener('click', hideSuccessHandler);
-  successModal.addEventListener('keypress', hideSuccessHandler);
-};
-
-// Обработчик скрытия модального окна "успех"
-let hideSuccessHandler = (evt) => {
-  // Отменяем действие по умолчанию
-  evt.preventDefault();
-  // Закрываем по кнопке ESC
-  if (evt.keyCode === 27) {
-    successModal.classList.add('hidden');
-  }
-  // Скрываем окно, добавляем класс hidden
-  successModal.classList.add('hidden');
-  // Удаляем обработчик закрытия окна
-  successModal.removeEventListener('click', hideSuccessHandler);
-  successModal.removeEventListener('keypress', hideSuccessHandler);
-};
-
-// Вешаем обработчик открытия и закрытия модального окна "успех"
-adForm.addEventListener('submit', showSuccessHandler);
-
-// -------------- 4.3 -------------- Оработчик передвижения Главного пина
+// -------------- 4.2 -------------- Оработчик передвижения Главного пина
 
 mapPinMain.addEventListener('mousedown', (evt) => {
   // Отмена по умолчанию
@@ -547,3 +514,77 @@ mapPinMain.addEventListener('mousedown', (evt) => {
   // При отпускании мышки Удаляем обработчки перемещения и this
   document.addEventListener('mouseup', onMouseUpMainPin);
 });
+
+// -------------- 4.3 -------------- Оработчик правильности заполненя и отправки формы
+
+// Обработчик показа модального окна "успех"
+let showSuccessHandler = (evt) => {
+  // Отменяем действие по умолчанию (переход на другую страницу, отправка...)
+  evt.preventDefault();
+  // Показываем окно, удаляя класс hidden
+  successModal.classList.remove('hidden');
+  // Отключаем форму
+  makeFromActive(false);
+  // Добавляем обработчик закрытия мобального окна по клику
+  successModal.addEventListener('click', hideSuccessHandler);
+  successModal.addEventListener('keypress', hideSuccessHandler);
+};
+
+// Обработчик скрытия модального окна "успех"
+let hideSuccessHandler = (evt) => {
+  // Отменяем действие по умолчанию
+  evt.preventDefault();
+  // Закрываем по кнопке ESC
+  if (evt.keyCode === 27) {
+    successModal.classList.add('hidden');
+  }
+  // Скрываем окно, добавляем класс hidden
+  successModal.classList.add('hidden');
+  // Удаляем обработчик закрытия окна
+  successModal.removeEventListener('click', hideSuccessHandler);
+  successModal.removeEventListener('keypress', hideSuccessHandler);
+};
+
+// Вешаем обработчик открытия и закрытия модального окна "успех"
+adForm.addEventListener('submit', showSuccessHandler);
+
+// ---------------------------------------------------------
+
+// INPUTS
+let adFormTitleInput = adForm.querySelector('#title');
+let adFormAddressInput = adForm.querySelector('#address');
+let adFormPriceInput = adForm.querySelector('#price');
+
+// Статус кнопки активная / не активная
+let statusAdFormSubmit = (boolean) => {
+  if (boolean === false) {
+    adFormSubmit.disabled = true;
+    adFormSubmit.classList.add('ad-form--disabled');
+  } else {
+    adFormSubmit.disabled = null;
+    adFormSubmit.classList.remove('ad-form--disabled');
+  }
+};
+
+// По умолчанию кнока не активна
+// statusAdFormSubmit(false);
+
+let onChangeValidity = (changeEvt) => {
+  if (adFormTitleInput.validity.tooShort) {
+    adFormTitleInput.setCustomValidity('Название объявления слишком короткое');
+    console.log(1);
+  } else if (adFormTitleInput.validity.tooLong) {
+    adFormTitleInput.setCustomValidity('Название объявления слишком длинное');
+    console.log(2);
+  } else if (adFormTitleInput.validity.valueMissing) {
+    adFormTitleInput.setCustomValidity('Введите название объявления');
+    console.log(3);
+  } else {
+    adFormTitleInput.setCustomValidity('');
+    console.log(4);
+    adFormTitleInput.style.borderColor = '#529955';
+  }
+};
+
+// Когда в форму adFormTitleInput введено нужное значение, показать консоль лог
+adFormTitleInput.addEventListener('change', onChangeValidity);
