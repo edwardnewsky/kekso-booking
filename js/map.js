@@ -78,7 +78,7 @@ let typesMap = {
   house: 'Дом',
   bungalo: 'Бунгало',
 };
-var DragLimit = {
+var DRAG_LIMIT = {
   X: {
     MIN: 0,
     MAX: 1200,
@@ -454,7 +454,7 @@ let hideSuccessHandler = (evt) => {
   // Отменяем действие по умолчанию
   evt.preventDefault();
   // Закрываем по кнопке ESC
-  if (evt.keyCode === 27 || ) {
+  if (evt.keyCode === 27) {
     successModal.classList.add('hidden');
   }
   // Скрываем окно, добавляем класс hidden
@@ -466,19 +466,3 @@ let hideSuccessHandler = (evt) => {
 
 // Вешаем обработчик открытия и закрытия модального окна "успех"
 adForm.addEventListener('submit', showSuccessHandler);
-
-// -------------- 4.3 -------------- Оработчик показа передвижения Главного пина
-
-// Оработчик показа передвижения Главного пина
-let moveMainPinHandler = (evt) => {
-  // Сбрасываем действие по умлочанию
-  evt.preventDefault();
-  // Говорим о начальной точке
-  let startCoords = {
-    x: evt.clientX,
-    y: evt.clientY,
-  }
-}
-
-// Вешаем обработчик нажатия клика
-mapPinMain.addEventListener('mousedown', moveMainPinHandler)
