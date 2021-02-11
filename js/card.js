@@ -1,19 +1,26 @@
-(() => {
-  'use strict';
+'use strict';
 
-  // -------------------- 3  -------------------- Попап описание к пинам
+(() => {
+  let popupPhoto = data.template.content.querySelector('.popup__photo');
+  let adTemplate = data.template.content.querySelector('.map__card');
+  let typesMap = {
+    palace: 'Дворец',
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало',
+  };
 
   // Создаем список features в .popup__features
-  let createFeatureFragment = (adData) => {
+  window.createFeatureFragment = (adDataIndex) => {
     // Создаем фрагмент
     let featureFragment = document.createDocumentFragment();
     // сколько раз
-    for (let i = 0; i < adData.offer.features.length; i++) {
+    for (let i = 0; i < adDataIndex.offer.features.length; i++) {
       // Создаем элемент списка (li)
       let featureItem = document.createElement('li');
       // Задаем элементу списка класс
       featureItem.className =
-        'popup__feature popup__feature--' + adData.offer.features[i];
+        'popup__feature popup__feature--' + adDataIndex.offer.features[i];
       // Куда вставялем
       featureFragment.appendChild(featureItem);
     }
@@ -21,62 +28,66 @@
   };
 
   // Создаем фотографии в popupPhoto
-  let createPhotosFragment = (adData) => {
+  let createPhotosFragment = (adDataIndex) => {
     // Создем фрагмент
     let photosFragment = document.createDocumentFragment();
     // Сколько раз
-    for (let i = 0; i < adData.offer.photos.length; i++) {
+    for (let i = 0; i < adDataIndex.offer.photos.length; i++) {
       // Копируем
       let popupPhotoItem = popupPhoto.cloneNode(true);
       // Что копируем
-      popupPhotoItem.src = adData.offer.photos[i];
+      popupPhotoItem.src = adDataIndex.offer.photos[i];
       // Куда вставляем
       photosFragment.appendChild(popupPhotoItem);
     }
     return photosFragment;
   };
 
-  // 3. Сделать функцию создания объекта объявления -- попапа
-  let createAd = (adData) => {
+  // Функция создания 1 попапа из объекта
+  let createAd = (adDataIndex) => {
     // Копируем объявление
     let ad = adTemplate.cloneNode(true);
     // Меняем аватар у объявления
-    ad.querySelector('.map__card img').src = adData.author.avatar;
+    ad.querySelector('.map__card img').src = adDataIndex.author.avatar;
     // Выведите заголовок объявления offer.title в заголовок .popup__title
-    ad.querySelector('.popup__title').textContent = adData.offer.title;
+    ad.querySelector('.popup__title').textContent = adDataIndex.offer.title;
     // Выведите адрес offer.address в блок .popup__text--address
     ad.querySelector('.popup__text--address').textContent =
-      adData.offer.address;
+      adDataIndex.offer.address;
     // Выведите цену offer.price в блок .popup__text--price строкой
     ad.querySelector('.popup__text--price').textContent =
-      adData.offer.price + ' ₽/ночь';
+      adDataIndex.offer.price + ' ₽/ночь';
     // В блок .popup__type выведите тип
-    ad.querySelector('.popup__type').textContent = typesMap[adData.offer.type];
+    ad.querySelector('.popup__type').textContent =
+      typesMap[adDataIndex.offer.type];
     // Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity строкой
     ad.querySelector('.popup__text--capacity').textContent =
-      adData.offer.rooms + ' комнаты для ' + adData.offer.guests + ' гостей';
+      adDataIndex.offer.rooms +
+      ' комнаты для ' +
+      adDataIndex.offer.guests +
+      ' гостей';
     // Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time
     ad.querySelector('.popup__text--time').textContent =
       'Заезд после ' +
-      adData.offer.checkin +
+      adDataIndex.offer.checkin +
       ', выезд до ' +
-      adData.offer.checkout;
+      adDataIndex.offer.checkout;
     // Очищаем список .popup__features
     ad.querySelector('.popup__features').innerHTML = '';
     // В список .popup__features выведите все доступные удобства в объявлении
     ad.querySelector('.popup__features').appendChild(
-      createFeatureFragment(adData)
+      createFeatureFragment(adDataIndex)
     );
     // В блок .popup__description выведите описание объекта недвижимости offer.description.
     ad.querySelector('.popup__description').textContent =
-      adData.offer.description;
+      adDataIndex.offer.description;
     // Удаляем что было до этого
     ad.querySelector('.popup__photos').removeChild(
       ad.querySelector('.popup__photo')
     );
     // В блок .popup__photos выведите все фотографии из списка offer.photos
     ad.querySelector('.popup__photos').appendChild(
-      createPhotosFragment(adData)
+      createPhotosFragment(adDataIndex)
     );
 
     // Возвращяем собранное

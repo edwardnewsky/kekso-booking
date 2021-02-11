@@ -1,43 +1,30 @@
-(() => {
-  // -------------------- 2  -------------------- Рисуем пины
-  'use strict';
-  // DOM-элемент объявления и вставьте полученный DOM-элемент в блок .map
-  window.map = document.querySelector('.map');
-  // Определяем тег "tempalte", где содержиться заготовка
-  window.template = document.querySelector('template');
-  // 2. определить куда вставлять pins -- map__pin
-  let mapPinTemplate = template.content.querySelector('.map__pin');
-  // Определяем куда render пины
-  let mapPins = map.querySelector('.map__pins');
+'use strict';
 
-  // 3. Сделать функцию создания пина
+(() => {
+  let mapPinTemplate = data.template.content.querySelector('.map__pin');
+  let mapPins = data.map.querySelector('.map__pins');
+
+  // Функция создания пина
   let createPinMarkup = (pinData) => {
-    // Клонируем элемент
     let pinItem = mapPinTemplate.cloneNode(true);
-    // Задаем src для img внутри
     pinItem.querySelector('img').src = pinData.author.avatar;
-    // Задаем локации
     pinItem.style.left = pinData.location.x + 'px';
     pinItem.style.top = pinData.location.y + 'px';
-    // Задаем заголовок
     pinItem.querySelector('img').alt = pinData.offer.title;
 
-    // Функция возвращяет созданный пин
+    // Функция возвращет созданный пин
     return pinItem;
   };
-  // 4. Сделать TOTAL_ADS.lenght количество пинов
-  window.renderPinsMarkup = (arrHowMuchPins) => {
-    // Создаем фрагмент
+
+  // Сделать data.TOTAL_ADS.lenght количество пинов
+  let renderPinsMarkup = (arrHowMuchPins) => {
     let mapPinsFragment = document.createDocumentFragment();
-    // Сколько нужно как говориться
     for (let i = 0; i < arrHowMuchPins.length; i++) {
-      // Создаем фрагмент => вставляем в конец  => во фрагменте будет пин[i]
       mapPinsFragment.appendChild(createPinMarkup(arrHowMuchPins[i]));
     }
-    // Возвращяем (arrHowMuchPins.length) фрагментов в конец секц .map__pins
     return mapPins.appendChild(mapPinsFragment);
   };
 
-  // 5. Рисуем все пины
-  // renderPinsMarkup(adsArr);
+  // Рисуем все пины
+  // renderPinsMarkup(data.adsArr);
 })();

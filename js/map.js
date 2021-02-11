@@ -1,38 +1,34 @@
+'use strict';
+
 (() => {
-  // -------------------- 2  -------------------- Рисуем пины
-  // DOM-элемент объявления и вставьте полученный DOM-элемент в блок .map
-  window.map = document.querySelector('.map');
-  // Определяем тег "tempalte", где содержиться заготовка
-  window.template = document.querySelector('template');
   // Карта
-  let mapFilters = map.querySelector('.map__filters');
-  // Куда вставлять фотографии объявлений
-  let popupPhoto = template.content.querySelector('.popup__photo');
-  // Опредеяем template объявления
-  let adTemplate = template.content.querySelector('.map__card');
+  let mapFilters = data.map.querySelector('.map__filters');
   // Определяем главный пин
   let mapPinMain = document.querySelector('.map__pin--main');
   // Поля для заполнения на карте
   let mapFiltersFieldset = mapFilters.querySelectorAll('fieldset');
   // Поля для выбора на карте
   let mapFiltersSelect = mapFilters.querySelectorAll('select');
-  // Поле формы "Ваше объявление"
+
+  // ФОРМА
   window.adForm = document.querySelector('.ad-form');
-  // Поля для заполнения в форме "Ваше объявление"
   let adFormFieldset = adForm.querySelectorAll('fieldset');
-  // Поля формы "Ваше объявление"
   let adFormInputAddress = adForm.querySelector('#address');
+  // ФОРМА
 
-  // Проверка активна ли форма (по умолчанию false)
+  let DRAG_LIMIT = {
+    X: {
+      MIN: 0,
+      MAX: 1200,
+    },
+    Y: {
+      MIN: 130,
+      MAX: 630,
+    },
+  };
+
+  // Проверка активна ли форма (по умолчанию false) ----- ФОРМА
   let isActive;
-
-  // Вставляем adTemplate перед блоком .map__filters-container:
-  // let mapFiltersContainer = map.querySelector('.map__filters-container');
-  // mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(adsArr[0]));
-
-  // -------------------- 4  -------------------- Делаем карту активной
-
-  // Первое действие, которое нужно выполнить, перед тем, как приступить к этому заданию, вернуть страницу в исходное состояние. В прошлом разделе мы активировали карту, убрав у неё класс .map--faded и вызвали методы отрисовки похожих объявлений и метод отрисовки карточки. Проблема в том, что это не соответствует ТЗ — эти методы должны вызываться только в рамках соответствующих сценариев, поэтому мы уберём их вызовы, а самими методами воспользуемся позже. Пока что оставим в коде методы, созданные в прошлом задании, но саму страницу вернём в исходное состояние.
 
   // Функция показа карты
   let showMap = () => {
@@ -60,11 +56,14 @@
   };
 
   // 5. Рисуем все пины
-  // renderPinsMarkup(adsArr);
+  // renderPinsMarkup(data.adsArr);
 
   // Вставляем adTemplate перед блоком .map__filters-container:
-  // let mapFiltersContainer = map.querySelector('.map__filters-container');
-  // mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(adsArr[0]));
+  let mapFiltersContainer = data.map.querySelector('.map__filters-container');
+  mapFiltersContainer.insertAdjacentElement(
+    'beforebegin',
+    createAd(data.adsArr[0])
+  );
 
   // Еще нужно не забыть проверить пункт ТЗ, указывающий на то, что поля формы должны быть неактивны в исходном состоянии. В разметке проекта поля активны, поэтому их нужно отключить, т.е. добавить через DOM-операции или самим полям или fieldset которые их содержат, атрибут disabled.
 
