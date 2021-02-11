@@ -1,14 +1,7 @@
 // -------------------- 2  -------------------- Рисуем пины
-// DOM-элемент объявления и вставьте полученный DOM-элемент в блок .map
-let map = document.querySelector('.map');
+
 // Карта
 let mapFilters = map.querySelector('.map__filters');
-// Определяем тег "tempalte", где содержиться заготовка
-let template = document.querySelector('template');
-// 2. определить куда вставлять pins -- map__pin
-let mapPinTemplate = template.content.querySelector('.map__pin');
-// Определяем куда render пины
-let mapPins = map.querySelector('.map__pins');
 // Куда вставлять фотографии объявлений
 let popupPhoto = template.content.querySelector('.popup__photo');
 // Опредеяем template объявления
@@ -31,38 +24,6 @@ let adFormSubmit = adForm.querySelector('.ad-form__submit');
 let successModal = document.querySelector('.success');
 // Проверка активна ли форма (по умолчанию false)
 let isActive;
-
-// 3. Сделать функцию создания пина
-let createPinMarkup = (pinData) => {
-  // Клонируем элемент
-  let pinItem = mapPinTemplate.cloneNode(true);
-  // Задаем src для img внутри
-  pinItem.querySelector('img').src = pinData.author.avatar;
-  // Задаем локации
-  pinItem.style.left = pinData.location.x + 'px';
-  pinItem.style.top = pinData.location.y + 'px';
-  // Задаем заголовок
-  pinItem.querySelector('img').alt = pinData.offer.title;
-
-  // Функция возвращяет созданный пин
-  return pinItem;
-};
-
-// 4. Сделать TOTAL_ADS.lenght количество пинов
-let renderPinsMarkup = (arrHowMuchPins) => {
-  // Создаем фрагмент
-  let mapPinsFragment = document.createDocumentFragment();
-  // Сколько нужно как говориться
-  for (let i = 0; i < arrHowMuchPins.length; i++) {
-    // Создаем фрагмент => вставляем в конец  => во фрагменте будет пин[i]
-    mapPinsFragment.appendChild(createPinMarkup(arrHowMuchPins[i]));
-  }
-  // Возвращяем (arrHowMuchPins.length) фрагментов в конец секц .map__pins
-  return mapPins.appendChild(mapPinsFragment);
-};
-
-// 5. Рисуем все пины
-// renderPinsMarkup(adsArr);
 
 // -------------------- 3  -------------------- Попап описание к пинам
 
@@ -326,107 +287,3 @@ mapPinMain.addEventListener('mousedown', (evt) => {
   // При отпускании мышки Удаляем обработчки перемещения и this
   document.addEventListener('mouseup', onMouseUpMainPin);
 });
-
-// -------------- 4.3 -------------- Оработчик правильности заполненя и отправки формы
-
-// Обработчик показа модального окна "успех"
-let showSuccessHandler = (evt) => {
-  // Отменяем действие по умолчанию (переход на другую страницу, отправка...)
-  evt.preventDefault();
-  // Показываем окно, удаляя класс hidden
-  successModal.classList.remove('hidden');
-  // Отключаем форму
-  makeFromActive(false);
-  // Добавляем обработчик закрытия мобального окна по клику
-  successModal.addEventListener('click', hideSuccessHandler);
-  successModal.addEventListener('keypress', hideSuccessHandler);
-};
-
-// Обработчик скрытия модального окна "успех"
-let hideSuccessHandler = (evt) => {
-  // Отменяем действие по умолчанию
-  evt.preventDefault();
-  // Закрываем по кнопке ESC
-  if (evt.keyCode === 27) {
-    successModal.classList.add('hidden');
-  }
-  // Скрываем окно, добавляем класс hidden
-  successModal.classList.add('hidden');
-  // Удаляем обработчик закрытия окна
-  successModal.removeEventListener('click', hideSuccessHandler);
-  successModal.removeEventListener('keypress', hideSuccessHandler);
-};
-
-// Вешаем обработчик открытия и закрытия модального окна "успех"
-adForm.addEventListener('submit', showSuccessHandler);
-
-// ---------------------------------------------------------
-
-// INPUTS
-let adFormTitleInput = adForm.querySelector('#title');
-let adFormAddressInput = adForm.querySelector('#address');
-let adFormPriceInput = adForm.querySelector('#price');
-
-// Статус кнопки активная / не активная
-let statusAdFormSubmit = (boolean) => {
-  if (boolean === false) {
-    adFormSubmit.disabled = true;
-    adFormSubmit.classList.add('ad-form--disabled');
-  } else {
-    adFormSubmit.disabled = null;
-    adFormSubmit.classList.remove('ad-form--disabled');
-  }
-};
-
-statusAdFormSubmit(false); // По умолчанию кнока не активна
-
-let checkAdFormSubmitStatus = () => {
-  if (
-    adFormTitleInput.validity.valid &&
-    adFormAddressInput.validity.valid &&
-    adFormPriceInput.validity.valid
-  ) {
-    console.log('можно жать кнопку');
-    statusAdFormSubmit(true);
-  } else {
-    statusAdFormSubmit(false);
-  }
-};
-
-let inputCheckValidity = (focusEvt) => {
-  focusEvt.target.addEventListener('keypress', () => {
-    if (focusEvt.target.validity.tooShort) {
-      let min = focusEvt.target.getAttribute('minlength');
-      focusEvt.target.setCustomValidity(
-        `Слишком коротко, минимум ${min} символов`
-      );
-      focusEvt.target.style.borderColor = 'red';
-      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
-    } else if (focusEvt.target.validity.valueMissing) {
-      focusEvt.target.setCustomValidity('Заполните это поле');
-      focusEvt.target.style.borderColor = 'red';
-      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
-    } else if (focusEvt.target.validity.rangeOverflow) {
-      focusEvt.target.setCustomValidity('Вы ввели слишком большое значение');
-      focusEvt.target.style.borderColor = 'red';
-      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
-    } else if (focusEvt.target.validity.rangeUnderflow) {
-      focusEvt.target.setCustomValidity('Вы ввели слишком маленькое значение');
-      focusEvt.target.style.borderColor = 'red';
-      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
-    } else {
-      focusEvt.target.setCustomValidity('');
-      focusEvt.target.style.borderColor = '#529955';
-      focusEvt.target.style.boxShadow = '0 0 2px 2px #529955';
-      checkAdFormSubmitStatus(); // Проверка, можно ли жать кнопку
-    }
-  });
-
-  focusEvt.target.addEventListener('blur', () => {
-    focusEvt.target.style.boxShadow = 'none';
-  });
-};
-
-adForm
-  .querySelectorAll('input')
-  .forEach((input) => input.addEventListener('focus', inputCheckValidity));
