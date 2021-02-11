@@ -2,8 +2,7 @@
 
 // -------------------- 1  -------------------- Создем mock массив
 
-// Сколько всего объявлений
-let TOTAL_ADS = 8;
+let TOTAL_ADS = 8; // Сколько всего объявлений
 // Mock объекта
 let offerOptions = {
   // строка, заголовок предложения, одно из фиксированных значений. Значения не должны повторяться.
@@ -566,71 +565,55 @@ let statusAdFormSubmit = (boolean) => {
   }
 };
 
-// По умолчанию кнока не активна
-// statusAdFormSubmit(false);
+statusAdFormSubmit(false); // По умолчанию кнока не активна
 
-let adFormCheckValidity = () => {
-  // let adFormInputs = adForm.querySelectorAll('input');
-  // console.log(adFormInputs);
-
-  let inputCheckValidity = (keypressEvt) => {
-    console.log('keypress');
-    if (keypressEvt.target.validity.tooShort) {
-      keypressEvt.target.setCustomValidity('Слишком коротко');
-      keypressEvt.target.style.borderColor = 'red';
-      keypressEvt.target.style.boxShadow = '0 0 2px 2px red';
-    } else if (keypressEvt.target.validity.valueMissing) {
-      keypressEvt.target.setCustomValidity('Заполните это поле');
-      keypressEvt.target.style.borderColor = 'red';
-      keypressEvt.target.style.boxShadow = '0 0 2px 2px red';
-    } else {
-      keypressEvt.target.setCustomValidity('');
-      keypressEvt.target.style.borderColor = '#529955';
-      keypressEvt.target.style.boxShadow = '0 0 2px 2px #529955';
-    }
-  };
-
-  let inputBlur = (blurEvt) => {
-    console.log('blur');
-    blurEvt.target.style.boxShadow = 'none';
-  };
-
-  console.log(adForm);
-
-  adForm
-    .querySelectorAll('input')
-    .forEach((input) => input.addEventListener('keypress', inputCheckValidity));
-
-  adForm
-    .querySelectorAll('input')
-    .forEach((input) => input.addEventListener('blur', inputBlur));
-
-  // adFormTitleInput.addEventListener('keypress', inputCheckValidity);
-  // adFormTitleInput.addEventListener('blur', inputBlur);
-
-  // adFormAddressInput.addEventListener('keypress', inputCheckValidity);
-  // adFormAddressInput.addEventListener('blur', inputBlur);
-
-  // adFormPriceInput.addEventListener('keypress', inputCheckValidity);
-  // adFormPriceInput.addEventListener('blur', inputBlur);
-
-  // let makeFormColor
-  // if (adFormTitleInput.validity.tooShort) {
-  //   adFormTitleInput.setCustomValidity('Название объявления слишком короткое');
-  //   console.log(1);
-  // } else if (adFormTitleInput.validity.tooLong) {
-  //   adFormTitleInput.setCustomValidity('Название объявления слишком длинное');
-  //   console.log(2);
-  // } else if (adFormTitleInput.validity.valueMissing) {
-  //   adFormTitleInput.setCustomValidity('Введите название объявления');
-  //   console.log(3);
-  // } else if (adFormTitleInput.validity.valid) {
-  //   console.log('valid');
-  // } else {
-  //   adFormTitleInput.setCustomValidity('');
-  //   console.log(4);
-  //   adFormTitleInput.style.borderColor = '#529955';
-  // }
+let checkAdFormSubmitStatus = () => {
+  if (
+    adFormTitleInput.validity.valid &&
+    adFormAddressInput.validity.valid &&
+    adFormPriceInput.validity.valid
+  ) {
+    console.log('можно жать кнопку');
+    statusAdFormSubmit(true);
+  } else {
+    statusAdFormSubmit(false);
+  }
 };
 
-adFormCheckValidity();
+let inputCheckValidity = (focusEvt) => {
+  focusEvt.target.addEventListener('keypress', () => {
+    if (focusEvt.target.validity.tooShort) {
+      let min = focusEvt.target.getAttribute('minlength');
+      focusEvt.target.setCustomValidity(
+        `Слишком коротко, минимум ${min} символов`
+      );
+      focusEvt.target.style.borderColor = 'red';
+      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
+    } else if (focusEvt.target.validity.valueMissing) {
+      focusEvt.target.setCustomValidity('Заполните это поле');
+      focusEvt.target.style.borderColor = 'red';
+      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
+    } else if (focusEvt.target.validity.rangeOverflow) {
+      focusEvt.target.setCustomValidity('Вы ввели слишком большое значение');
+      focusEvt.target.style.borderColor = 'red';
+      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
+    } else if (focusEvt.target.validity.rangeUnderflow) {
+      focusEvt.target.setCustomValidity('Вы ввели слишком маленькое значение');
+      focusEvt.target.style.borderColor = 'red';
+      focusEvt.target.style.boxShadow = '0 0 2px 2px red';
+    } else {
+      focusEvt.target.setCustomValidity('');
+      focusEvt.target.style.borderColor = '#529955';
+      focusEvt.target.style.boxShadow = '0 0 2px 2px #529955';
+      checkAdFormSubmitStatus(); // Проверка, можно ли жать кнопку
+    }
+  });
+
+  focusEvt.target.addEventListener('blur', () => {
+    focusEvt.target.style.boxShadow = 'none';
+  });
+};
+
+adForm
+  .querySelectorAll('input')
+  .forEach((input) => input.addEventListener('focus', inputCheckValidity));
