@@ -1,5 +1,9 @@
 (() => {
   'use strict';
+  // Кнопка отправить на форме Объявление
+  let adFormSubmit = adForm.querySelector('.ad-form__submit');
+  // Определеляем модальное окно успеха
+  let successModal = document.querySelector('.success');
 
   // --------------------------------------------------------- Форма
 
