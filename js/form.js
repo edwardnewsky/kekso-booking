@@ -1,7 +1,8 @@
+'use strict';
+
 (() => {
-  'use strict';
   // Кнопка отправить на форме Объявление
-  let adFormSubmit = adForm.querySelector('.ad-form__submit');
+  let adFormSubmit = dom.adForm.querySelector('.ad-form__submit');
   // Определеляем модальное окно успеха
   let successModal = document.querySelector('.success');
 
@@ -18,6 +19,16 @@
     // Добавляем обработчик закрытия мобального окна по клику
     successModal.addEventListener('click', hideSuccessHandler);
     successModal.addEventListener('keypress', hideSuccessHandler);
+
+    let cardOnMap = dom.map.querySelector('.map__card');
+    cardOnMap.remove();
+
+    let pinsOnMap = dom.map.querySelectorAll('.map__pin--created');
+    for (let i = 0; i < pinsOnMap.length; i++) {
+      pinsOnMap[i].remove();
+    }
+
+    dom.map.classList.add('map--faded');
   };
 
   // Обработчик скрытия модального окна "успех"
@@ -36,12 +47,12 @@
   };
 
   // Вешаем обработчик открытия и закрытия модального окна "успех"
-  adForm.addEventListener('submit', showSuccessHandler);
+  dom.adForm.addEventListener('submit', showSuccessHandler);
 
   // INPUTS
-  let adFormTitleInput = adForm.querySelector('#title');
-  let adFormAddressInput = adForm.querySelector('#address');
-  let adFormPriceInput = adForm.querySelector('#price');
+  let adFormTitleInput = dom.adForm.querySelector('#title');
+  let adFormAddressInput = dom.adForm.querySelector('#address');
+  let adFormPriceInput = dom.adForm.querySelector('#price');
 
   // Статус кнопки активная / не активная
   let statusAdFormSubmit = (boolean) => {
@@ -105,7 +116,7 @@
     });
   };
 
-  adForm
+  dom.adForm
     .querySelectorAll('input')
     .forEach((input) => input.addEventListener('focus', inputCheckValidity));
 })();

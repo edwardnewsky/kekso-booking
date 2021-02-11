@@ -2,18 +2,19 @@
 
 (() => {
   // Карта
-  let mapFilters = data.map.querySelector('.map__filters');
+  let mapFilters = dom.map.querySelector('.map__filters');
   // Определяем главный пин
   let mapPinMain = document.querySelector('.map__pin--main');
   // Поля для заполнения на карте
   let mapFiltersFieldset = mapFilters.querySelectorAll('fieldset');
   // Поля для выбора на карте
   let mapFiltersSelect = mapFilters.querySelectorAll('select');
+  // Контейнер куда рендерить карточки
+  let mapFiltersContainer = dom.map.querySelector('.map__filters-container');
 
   // ФОРМА
-  window.adForm = document.querySelector('.ad-form');
-  let adFormFieldset = adForm.querySelectorAll('fieldset');
-  let adFormInputAddress = adForm.querySelector('#address');
+  let adFormFieldset = dom.adForm.querySelectorAll('fieldset');
+  let adFormInputAddress = dom.adForm.querySelector('#address');
   // ФОРМА
 
   let DRAG_LIMIT = {
@@ -27,16 +28,9 @@
     },
   };
 
-  // Проверка активна ли форма (по умолчанию false) ----- ФОРМА
-  let isActive;
-
   // Функция показа карты
   let showMap = () => {
-    map.classList.remove('map--faded');
-  };
-
-  let blockMap = () => {
-    map.classList.add('map--faded');
+    dom.map.classList.remove('map--faded');
   };
 
   let getMapPinMainCoords = () => {
@@ -55,25 +49,13 @@
       mapPinMainPosition.x + ', ' + mapPinMainPosition.y;
   };
 
-  // 5. Рисуем все пины
-  // renderPinsMarkup(data.adsArr);
-
-  // Вставляем adTemplate перед блоком .map__filters-container:
-  let mapFiltersContainer = data.map.querySelector('.map__filters-container');
-  mapFiltersContainer.insertAdjacentElement(
-    'beforebegin',
-    createAd(data.adsArr[0])
-  );
-
-  // Еще нужно не забыть проверить пункт ТЗ, указывающий на то, что поля формы должны быть неактивны в исходном состоянии. В разметке проекта поля активны, поэтому их нужно отключить, т.е. добавить через DOM-операции или самим полям или fieldset которые их содержат, атрибут disabled.
-
   // Создаем фукнцию которая может выключать и включать элементы формы к заполнению
   window.makeFromActive = (boolean /* disabled (true или false) */) => {
     // Если активно то форма добавления объявления => opacity: 0
     if (boolean === true) {
-      adForm.classList.remove('ad-form--disabled');
+      dom.adForm.classList.remove('ad-form--disabled');
     } else {
-      adForm.classList.add('ad-form--disabled');
+      dom.adForm.classList.add('ad-form--disabled');
     }
 
     // Делаем цикл который проходит по всем элменетам adFormFieldset внутри adForm
@@ -105,7 +87,7 @@
     boolean ? fillAdressInput() : (adFormInputAddress.value = '');
 
     // Перезаписываем значение переменной isActive
-    isActive = boolean;
+    flags.isActive = boolean;
   };
 
   // По умолчанию делаем форму не активной
@@ -113,16 +95,26 @@
 
   // -------------- 4.1 -------------- Обработчики на главный пин
 
+  let renderCard = (adsArrIndex) => {
+    // Вставляем adTemplate перед блоком .map__filters-container:
+    mapFiltersContainer.insertAdjacentElement(
+      'beforebegin',
+      window.createAd(adsArrIndex)
+    );
+  };
+
   // Обработчик активации полей и элементов и карты
   let siteStatusHandler = () => {
     // Если форма не активна, то активируем
-    if (isActive === false) {
+    if (flags.isActive === false) {
       // Активируем формы
       makeFromActive(true);
       // Показываем карту
       showMap();
       // Рисуем пины
-      renderPinsMarkup(adsArr);
+      renderPinsMarkup(data.adsArr);
+      // ВРЕМЕННО -- Показываем карточку
+      renderCard(data.adsArr[0]);
     }
   };
 
@@ -151,7 +143,6 @@
         y: startCoords.y - moveEvt.clientY,
       };
 
-      // ЧТО ЭТО
       startCoords = {
         x: moveEvt.clientX,
         y: moveEvt.clientY,

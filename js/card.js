@@ -1,8 +1,8 @@
 'use strict';
 
 (() => {
-  let popupPhoto = data.template.content.querySelector('.popup__photo');
-  let adTemplate = data.template.content.querySelector('.map__card');
+  let popupPhoto = dom.template.content.querySelector('.popup__photo');
+  let adTemplate = dom.template.content.querySelector('.map__card');
   let typesMap = {
     palace: 'Дворец',
     flat: 'Квартира',
@@ -11,7 +11,7 @@
   };
 
   // Создаем список features в .popup__features
-  window.createFeatureFragment = (adDataIndex) => {
+  let createFeatureFragment = (adDataIndex) => {
     // Создаем фрагмент
     let featureFragment = document.createDocumentFragment();
     // сколько раз
@@ -44,7 +44,7 @@
   };
 
   // Функция создания 1 попапа из объекта
-  let createAd = (adDataIndex) => {
+  window.createAd = (adDataIndex) => {
     // Копируем объявление
     let ad = adTemplate.cloneNode(true);
     // Меняем аватар у объявления

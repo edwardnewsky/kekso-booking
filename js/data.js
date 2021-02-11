@@ -59,8 +59,6 @@
       },
     },
     adsArr: [],
-    template: document.querySelector('template'),
-    map: document.querySelector('.map'),
   };
 
   // Функция создания объекта
